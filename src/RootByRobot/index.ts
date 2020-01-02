@@ -5,3 +5,4 @@ export {BoardVersion as ModuleVersion} from './Devices/GeneralDevice';
 export {MarkerEraserPosition} from './Devices/MarkerEraserDevice';
 export {RobotFinder} from './RobotFinder';
 export {LightingOption} from './Devices/ColorSensorDevice';
+export type BumpersEvent = import('./Devices/BumpersDevice').BumpersEvent;

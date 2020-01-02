@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {Robot, LightingOption} from '../RootByRobot';
+import {Robot, LightingOption, BumpersEvent} from '../RootByRobot';
 import * as Sequencer from '../Extras/sequencer';
 
 export interface ActiveRobotProps {
@@ -21,23 +21,11 @@ export interface ActiveRobotProps {
 
 const ActiveRobot = (props: ActiveRobotProps) => {
   const {robot} = props;
-  //  const [robot, setRobot] = useState<Robot>();
+  const [bumpers, setBumpers] = useState<BumpersEvent>();
 
-  // useEffect(() => {
-  //   if (props.robot) {
-  //     (async () => {
-  //       const robot = new Robot(props.robot);
-  //       await robot.connect();
-  //       setRobot(robot);
-  //     })();
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (robot) {
-  //     robot.devices.motors.rotateAngle(900);
-  //   }
-  // }, [robot]);
+  useEffect(() => {
+    robot.emitter.on('bumpers:Event', setBumpers);
+  }, []);
 
   const Button = (
     props: React.PropsWithChildren<{
@@ -89,7 +77,14 @@ const ActiveRobot = (props: ActiveRobotProps) => {
           style={styles.scrollView}>
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>{robot.name}</Text>
+              <Text>
+                <Text style={styles.sectionTitle}>{robot.name}</Text>
+                {bumpers && bumpers.isLeftBumperPressed && <Text>LB</Text>}
+                {bumpers &&
+                  bumpers.isLeftBumperPressed &&
+                  bumpers.isRightBumperPressed && <Text>-</Text>}
+                {bumpers && bumpers.isRightBumperPressed && <Text>RB</Text>}
+              </Text>
             </View>
             <Button
               onPress={() => {

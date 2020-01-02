@@ -140,6 +140,13 @@ export const stripNulls = (input: string): string =>
     .filter(c => c !== '\0')
     .join('');
 
+export function ArrayBufferFromBytes(input: Uint8Array): ArrayBuffer {
+  const buffer = new ArrayBuffer(input.length);
+  const bytes = new Uint8Array(buffer);
+  bytes.set(input);
+  return buffer;
+}
+
 let sequnceId = 0;
 export function CreateMessage(
   device: number,

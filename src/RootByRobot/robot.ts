@@ -33,6 +33,7 @@ import {MarkerEraserDevice} from './Devices/MarkerEraserDevice';
 import {SoundDevice} from './Devices/SoundDevice';
 import {LEDLightsDevice} from './Devices/LEDLightsDevice';
 import {ColorSensorDevice, SensorColor} from './Devices/ColorSensorDevice';
+import {BumpersDevice} from './Devices/BumpersDevice';
 
 interface RobotDevices {
   general: GeneralDevice;
@@ -41,6 +42,7 @@ interface RobotDevices {
   sound: SoundDevice;
   LEDLights: LEDLightsDevice;
   colorSensor: ColorSensorDevice;
+  bumpers: BumpersDevice;
 }
 
 export class Robot {
@@ -71,6 +73,7 @@ export class Robot {
       sound: new SoundDevice(this.sendTXMessage, this.emitter),
       LEDLights: new LEDLightsDevice(this.sendTXMessage, this.emitter),
       colorSensor: new ColorSensorDevice(this.sendTXMessage, this.emitter),
+      bumpers: new BumpersDevice(this.sendTXMessage, this.emitter),
     };
   }
 

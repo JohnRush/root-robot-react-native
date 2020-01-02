@@ -49,7 +49,7 @@ export class ColorSensorDevice {
     this.emitter.on('rx', this.listenForMyEvents);
   }
 
-  private listenForMyEvents(message: RxTxMessage) {
+  private readonly listenForMyEvents = (message: RxTxMessage) => {
     if (message.device == Devices.ColorSensor) {
       if (message.command === ColorSensorEvent.NewColorEvent) {
         const colors = [] as Array<number>;
@@ -57,10 +57,11 @@ export class ColorSensorDevice {
           colors.push((b & 0xf) >> 4);
           colors.push(b & 0x0f);
         });
+
         this.emitter.emit('colorSensor:NewColorEvent', colors);
       }
     }
-  }
+  };
 
   /**
    * Get the color sensor data.
