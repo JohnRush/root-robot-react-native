@@ -11,16 +11,9 @@ import {
   GestureResponderEvent,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {Robot, BleDeviceInformation} from '../RootByRobot';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Robot, LightingOption} from '../RootByRobot';
 import * as Sequencer from '../Extras/sequencer';
-import {LEDAnimationMode} from '../RootByRobot/Devices/LEDLightsDevice';
 
 export interface ActiveRobotProps {
   robot: Robot;
@@ -98,6 +91,12 @@ const ActiveRobot = (props: ActiveRobotProps) => {
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>{robot.name}</Text>
             </View>
+            <Button
+              onPress={() => {
+                robot.devices.colorSensor.getColorData(0, LightingOption.All);
+              }}>
+              Get Color Data Bank 0
+            </Button>
             <Button
               onPress={() => {
                 robot.devices.motors.rotateAngle(900);

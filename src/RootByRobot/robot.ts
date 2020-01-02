@@ -24,14 +24,15 @@ import {
   stripNulls,
   RobotState,
   IEventEmitter,
+  BufferAsHex,
 } from './utilties';
+import manager from './bluetooth';
 import {GeneralDevice} from './Devices/GeneralDevice';
 import {MotorsDevice} from './Devices/MotorsDevice';
 import {MarkerEraserDevice} from './Devices/MarkerEraserDevice';
 import {SoundDevice} from './Devices/SoundDevice';
 import {LEDLightsDevice} from './Devices/LEDLightsDevice';
-import manager from './bluetooth';
-import {TabBarIOSItem} from 'react-native';
+import {ColorSensorDevice, SensorColor} from './Devices/ColorSensorDevice';
 
 interface RobotDevices {
   general: GeneralDevice;
@@ -39,6 +40,7 @@ interface RobotDevices {
   markerEraser: MarkerEraserDevice;
   sound: SoundDevice;
   LEDLights: LEDLightsDevice;
+  colorSensor: ColorSensorDevice;
 }
 
 export class Robot {
@@ -68,6 +70,7 @@ export class Robot {
       markerEraser: new MarkerEraserDevice(this.sendTXMessage, this.emitter),
       sound: new SoundDevice(this.sendTXMessage, this.emitter),
       LEDLights: new LEDLightsDevice(this.sendTXMessage, this.emitter),
+      colorSensor: new ColorSensorDevice(this.sendTXMessage, this.emitter),
     };
   }
 
@@ -138,18 +141,11 @@ export class Robot {
             command,
             id,
             crc,
-            payload: message.subarray(3, message.length - 2),
+            payload: message.subarray(3, message.length - 1),
             debug: MessageAsHex(message),
           };
-          this.emitter.emit('rx', rval);
 
-          if (Devices[device]) {
-            console.log(`RX: ${rval.debug} ${Devices[rval.device]}`);
-          } else {
-            console.log(`RX: ${rval.debug}`);
-          }
-        } else {
-          console.log('RX: No payload');
+          this.emitter.emit('rx', rval);
         }
       },
     );

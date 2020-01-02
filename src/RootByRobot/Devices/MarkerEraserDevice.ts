@@ -1,6 +1,6 @@
 import {Devices} from '../constants';
 import {
-  createMessage,
+  CreateMessage,
   IEventEmitter,
   GetRxResponse,
   SendTxMessage,
@@ -28,7 +28,7 @@ export class MarkerEraserDevice {
    * @returns The promise will resolve when the command has completed.
    */
   public async setMarkerEraserPosition(position: MarkerEraserPosition) {
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.MarkerEraser,
       MarkerEraserCommands.SetMarkerEraserPosition,
       [position],

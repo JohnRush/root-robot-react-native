@@ -1,6 +1,6 @@
 import {Devices} from '../constants';
 import {
-  createMessage,
+  CreateMessage,
   IEventEmitter,
   SendTxMessage,
   GetRxResponse,
@@ -35,7 +35,7 @@ export class MotorsDevice {
     view.setInt32(0, Clamp(leftSpeed, -100, 100), false);
     view.setInt32(4, Clamp(rightSpeed, -100, 100), false);
 
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.Motors,
       MotorsCommand.LeftAndRightSpeed,
       new Uint8Array(buffer),
@@ -51,7 +51,7 @@ export class MotorsDevice {
     const buffer = new ArrayBuffer(16);
     const view = new DataView(buffer, 0, 4);
     view.setInt32(0, Clamp(speed, -100, 100), false);
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.Motors,
       MotorsCommand.LeftMotorSpeed,
       new Uint8Array(buffer),
@@ -67,7 +67,7 @@ export class MotorsDevice {
     const buffer = new ArrayBuffer(16);
     const view = new DataView(buffer, 0, 4);
     view.setInt32(0, Clamp(speed, -100, 100), false);
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.Motors,
       MotorsCommand.RightMotorSpeed,
       new Uint8Array(buffer),
@@ -85,7 +85,7 @@ export class MotorsDevice {
     const view = new DataView(buffer, 0, 4);
     view.setInt32(0, distance, false);
 
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.Motors,
       MotorsCommand.DriveDistance,
       new Uint8Array(buffer),
@@ -104,7 +104,7 @@ export class MotorsDevice {
     const view = new DataView(buffer, 0, 4);
     view.setInt32(0, angle, false);
 
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.Motors,
       MotorsCommand.RotateAngle,
       new Uint8Array(buffer),

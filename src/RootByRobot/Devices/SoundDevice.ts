@@ -1,6 +1,6 @@
 import {Devices} from '../constants';
 import {
-  createMessage,
+  CreateMessage,
   IEventEmitter,
   GetRxResponse,
   SendTxMessage,
@@ -29,7 +29,7 @@ export class SoundDevice {
     const data = new DataView(buffer, 0, 6);
     data.setUint32(0, frequence);
     data.setUint16(4, duration);
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.Sound,
       SoundCommands.PlayNote,
       new Uint8Array(buffer),
@@ -42,7 +42,7 @@ export class SoundDevice {
    * Immediately stop any playing note.
    */
   public async stopNote(): Promise<void> {
-    const message = createMessage(Devices.Sound, SoundCommands.PlayNote);
+    const message = CreateMessage(Devices.Sound, SoundCommands.PlayNote);
     await this.SendTXMessage(message);
   }
 
@@ -55,7 +55,7 @@ export class SoundDevice {
     const buffer = new ArrayBuffer(16);
     const data = new Uint8Array(buffer);
     data.set(Array.from(phrase.substr(0, 16)).map(x => x.charCodeAt(0)));
-    const message = createMessage(Devices.Sound, SoundCommands.SayPhrase, data);
+    const message = CreateMessage(Devices.Sound, SoundCommands.SayPhrase, data);
     await this.SendTXMessage(message);
     await GetRxResponse(this.emitter, message);
   }

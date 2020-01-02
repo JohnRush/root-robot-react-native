@@ -1,6 +1,6 @@
 import {Devices} from '../constants';
 import {
-  createMessage,
+  CreateMessage,
   StringToUtf8Special,
   BufferAsString,
   IEventEmitter,
@@ -39,7 +39,7 @@ export class LEDLightsDevice {
     green: number,
     blue: number,
   ) {
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.LEDLights,
       LEDLightsCommmand.SetLEDAnimation,
       [mode, Clamp(red, 0, 255), Clamp(green, 0, 255), Clamp(blue, 0, 255)],

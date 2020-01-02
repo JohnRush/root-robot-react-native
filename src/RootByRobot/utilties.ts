@@ -141,7 +141,7 @@ export const stripNulls = (input: string): string =>
     .join('');
 
 let sequnceId = 0;
-export function createMessage(
+export function CreateMessage(
   device: number,
   command: number,
   data?: ArrayLike<number>,

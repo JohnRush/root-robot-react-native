@@ -1,6 +1,6 @@
 import {Devices} from '../constants';
 import {
-  createMessage,
+  CreateMessage,
   StringToUtf8Special,
   BufferAsString,
   IEventEmitter,
@@ -43,7 +43,7 @@ export class GeneralDevice {
    * @param board The board (component) to get the version for.
    */
   public async getVersions(board = BoardVersion.MainBoard) {
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.General,
       GeneralCommand.GetVersions,
       board === BoardVersion.MainBoard ? [0xa5] : [0xc6],
@@ -63,7 +63,7 @@ export class GeneralDevice {
    * Get the current BLE advertising name.
    */
   public async getName(): Promise<string | null> {
-    const message = createMessage(Devices.General, GeneralCommand.GetName);
+    const message = CreateMessage(Devices.General, GeneralCommand.GetName);
     await this.SendTXMessage(message);
     const response = await GetRxResponse(this.emitter, message);
     return BufferAsString(response);
@@ -75,7 +75,7 @@ export class GeneralDevice {
    */
   public async setName(name: string) {
     await this.SendTXMessage(
-      createMessage(
+      CreateMessage(
         Devices.General,
         GeneralCommand.SetName,
         StringToUtf8Special(name, 16),
@@ -88,7 +88,7 @@ export class GeneralDevice {
    */
   public async stopAndReset() {
     await this.SendTXMessage(
-      createMessage(Devices.General, GeneralCommand.StopAndReset),
+      CreateMessage(Devices.General, GeneralCommand.StopAndReset),
     );
   }
 
@@ -97,7 +97,7 @@ export class GeneralDevice {
    */
   public async disconnect() {
     await this.SendTXMessage(
-      createMessage(Devices.General, GeneralCommand.Disconnect),
+      CreateMessage(Devices.General, GeneralCommand.Disconnect),
     );
   }
 
@@ -123,7 +123,7 @@ export class GeneralDevice {
    * Get the product serial number.
    */
   public async getSerialNumber() {
-    const message = createMessage(
+    const message = CreateMessage(
       Devices.General,
       GeneralCommand.GetSerialNumber,
     );

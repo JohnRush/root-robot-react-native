@@ -31,14 +31,6 @@ export enum Devices {
   CliffSensor = 20,
 }
 
-export enum ColorSensorCommand {
-  GetData = 1,
-}
-
-export enum ColorSensorEvent {
-  NewColorEvent = 2,
-}
-
 export enum BumperEvent {
   Evemt = 0,
 }
