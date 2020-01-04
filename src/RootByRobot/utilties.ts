@@ -1,20 +1,9 @@
 import * as Base64 from './lib/base64';
 import {CRC8} from './lib/crc8';
-import {Characteristic} from 'react-native-ble-plx';
-
-export type SendTxMessage = (
-  message: RxTxMessage,
-) => Promise<Characteristic | null>;
+import {RxTxMessage, IEventEmitter} from './shared';
 
 export function Clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
-}
-
-export interface IEventEmitter {
-  on: (name: string, fn: Function) => void;
-  once: (name: string, fn: Function) => void;
-  emit: (name: string, ...args: any[]) => void;
-  removeListener: (name: string, fn: Function) => void;
 }
 
 export function crc8(buffer: Uint8Array) {
@@ -22,49 +11,6 @@ export function crc8(buffer: Uint8Array) {
   const crc8 = new CRC8();
   let crc = crc8.checksum(Array.from(buffer));
   return crc;
-}
-
-export interface Events {
-  information: RobotInformation;
-}
-
-export interface RxTxMessage {
-  device: number;
-  command: number;
-  id: number;
-  crc: number;
-  payload?: Uint8Array;
-  message?: Uint8Array;
-  debug?: string;
-}
-
-export interface RobotState {
-  cliff: boolean;
-  leftBumper: boolean;
-  rightBumper: boolean;
-  rlTouch: boolean;
-  rrTouch: boolean;
-  flTouch: boolean;
-  frTouch: boolean;
-  battery: number;
-}
-
-export interface BleDeviceInformation {
-  id: string;
-  localName: string | null;
-  name: string | null;
-  serviceUUIDs: Array<string> | null;
-  mtu: number;
-  rssi: number | null;
-  serviceData: any;
-}
-
-export interface RobotInformation {
-  SerialNumber: string;
-  FirmwareVersion: string;
-  HardwareVersion: string;
-  Manufacturer: string;
-  State: RobotState;
 }
 
 export function cleanOject(input: any) {
@@ -175,30 +121,4 @@ export function CreateMessage(
     message: message,
     debug: MessageAsHex(message),
   };
-}
-
-export async function GetRxResponse(
-  emitter: IEventEmitter,
-  message: RxTxMessage,
-): Promise<Uint8Array> {
-  const handleRx = (resolve: any, response: RxTxMessage) => {
-    if (
-      response &&
-      response.payload &&
-      response.device === message.device &&
-      response.command === message.command &&
-      response.id == message.id
-    ) {
-      resolve(response);
-    }
-  };
-
-  const work = new Promise<RxTxMessage>((resolve, reject) => {
-    emitter.on('rx', (x: RxTxMessage) => handleRx(resolve, x));
-  }).then(x => {
-    emitter.removeListener('rx', handleRx);
-    return x.payload!;
-  });
-
-  return work;
 }

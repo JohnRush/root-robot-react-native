@@ -1,13 +1,5 @@
-import {Devices} from '../constants';
-import {
-  CreateMessage,
-  IEventEmitter,
-  GetRxResponse,
-  SendTxMessage,
-  MessageAsHex,
-  BufferAsHex,
-  RxTxMessage,
-} from '../utilties';
+import {Devices, RxTxMessage, DevicePluginConfig} from '../shared';
+import {CreateMessage, BufferAsHex} from '../utilties';
 
 enum ColorSensorCommand {
   GetData = 1,
@@ -42,25 +34,25 @@ export enum SensorColor {
  * Events: 'colorSensor:NewColorEvent'
  */
 export class ColorSensorDevice {
-  constructor(
-    private SendTXMessage: SendTxMessage,
-    private emitter: IEventEmitter,
-  ) {
-    this.emitter.on('rx', this.listenForMyEvents);
+  constructor(private config: DevicePluginConfig) {
+    this.config.subscribe(Devices.ColorSensor, this.listenForMyEvents);
   }
 
   private readonly listenForMyEvents = (message: RxTxMessage) => {
-    if (message.device == Devices.ColorSensor) {
-      if (message.command === ColorSensorEvent.NewColorEvent) {
-        const colors = [] as Array<number>;
-        message.payload!.forEach(b => {
-          colors.push((b & 0xf) >> 4);
-          colors.push(b & 0x0f);
-        });
-
-        this.emitter.emit('colorSensor:NewColorEvent', colors);
-      }
+    if (message.command === ColorSensorEvent.NewColorEvent) {
+      this.handleColorSensorEvent(message);
     }
+  };
+
+  private readonly handleColorSensorEvent = (message: RxTxMessage) => {
+    const colors = [] as Array<number>;
+    message.payload!.forEach(b => {
+      colors.push((b & 0xf) >> 4);
+      colors.push(b & 0x0f);
+    });
+
+    console.debug('ColorSensorDevice', colors);
+    this.config.emit('newColorEvent', colors);
   };
 
   /**
@@ -79,8 +71,8 @@ export class ColorSensorDevice {
       ColorSensorCommand.GetData,
       [bank, lighting, ColorFormat.ADC],
     );
-    await this.SendTXMessage(message);
-    const response = await GetRxResponse(this.emitter, message);
+    await this.config.sendMessage(message);
+    const response = await this.config.waitForResponse(message);
     console.log(BufferAsHex(response));
     return Array.from(response);
   }

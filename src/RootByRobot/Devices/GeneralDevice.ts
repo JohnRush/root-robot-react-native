@@ -1,12 +1,10 @@
-import {Devices} from '../constants';
 import {
-  CreateMessage,
-  StringToUtf8Special,
-  BufferAsString,
-  IEventEmitter,
-  GetRxResponse,
+  Devices,
+  DevicePluginConfig,
+  EventWatcher,
   SendTxMessage,
-} from '../utilties';
+} from '../shared';
+import {CreateMessage, StringToUtf8Special, BufferAsString} from '../utilties';
 
 enum GeneralCommand {
   GetVersions = 0,
@@ -33,10 +31,13 @@ export interface VersionInfo {
 }
 
 export class GeneralDevice {
-  constructor(
-    private SendTXMessage: SendTxMessage,
-    private emitter: IEventEmitter,
-  ) {}
+  private _sender: SendTxMessage;
+  private _watcher: EventWatcher;
+
+  constructor(pluginConfig: DevicePluginConfig) {
+    this._sender = pluginConfig.sendMessage;
+    this._watcher = pluginConfig.waitForResponse;
+  }
 
   /**
    * Get the software and hardware version numbers for the requested board.
@@ -48,8 +49,9 @@ export class GeneralDevice {
       GeneralCommand.GetVersions,
       board === BoardVersion.MainBoard ? [0xa5] : [0xc6],
     );
-    await this.SendTXMessage(message);
-    const response = await GetRxResponse(this.emitter, message);
+    await this._sender(message);
+
+    const response = await this._watcher(message);
 
     return {
       Firmware: `${response[1]}.${response[2]}`,
@@ -64,8 +66,8 @@ export class GeneralDevice {
    */
   public async getName(): Promise<string | null> {
     const message = CreateMessage(Devices.General, GeneralCommand.GetName);
-    await this.SendTXMessage(message);
-    const response = await GetRxResponse(this.emitter, message);
+    await this._sender(message);
+    const response = await this._watcher(message);
     return BufferAsString(response);
   }
 
@@ -74,7 +76,7 @@ export class GeneralDevice {
    * @param name The namem to set. Only uses the first 16 characters.
    */
   public async setName(name: string) {
-    await this.SendTXMessage(
+    await this._sender(
       CreateMessage(
         Devices.General,
         GeneralCommand.SetName,
@@ -87,7 +89,7 @@ export class GeneralDevice {
    * Immediately stop the robot and cancel any pending actions. (Same as pressing the stop button in the Root Coding app.)
    */
   public async stopAndReset() {
-    await this.SendTXMessage(
+    await this._sender(
       CreateMessage(Devices.General, GeneralCommand.StopAndReset),
     );
   }
@@ -96,7 +98,7 @@ export class GeneralDevice {
    * Instruct robot to immediately terminate BLE connection. This is sometimes faster than disconnecting from BLE host's side.
    */
   public async disconnect() {
-    await this.SendTXMessage(
+    await this._sender(
       CreateMessage(Devices.General, GeneralCommand.Disconnect),
     );
   }
@@ -105,7 +107,7 @@ export class GeneralDevice {
    *  Enable BLE notification for events by devices on the robot. By default, all events are enabled.
    */
   //   public async enableEvents() {
-  //     await this.SendTXMessage(
+  //     await this._sender(
   //       createMessage(Devices.General, GeneralCommand.EnableEvents),
   //     );
   //   }
@@ -114,7 +116,7 @@ export class GeneralDevice {
    * Disable BLE notification for events by device on the robot. By default, all events are enabled.
    */
   //   public async disableEvents() {
-  //     await this.SendTXMessage(
+  //     await this._sender(
   //         createMessage(Devices.General, GeneralCommand.DisableEvents),
   //       );
   //     }
@@ -127,8 +129,8 @@ export class GeneralDevice {
       Devices.General,
       GeneralCommand.GetSerialNumber,
     );
-    await this.SendTXMessage(message);
-    const response = await GetRxResponse(this.emitter, message);
+    await this._sender(message);
+    const response = await this._watcher(message);
     return BufferAsString(response);
   }
 }

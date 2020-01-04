@@ -1,11 +1,5 @@
-import {Devices} from '../constants';
-import {
-  CreateMessage,
-  IEventEmitter,
-  GetRxResponse,
-  SendTxMessage,
-  BufferAsHex,
-} from '../utilties';
+import {Devices, DevicePluginConfig} from '../shared';
+import {CreateMessage} from '../utilties';
 
 enum SoundCommands {
   PlayNote = 0,
@@ -14,10 +8,8 @@ enum SoundCommands {
 }
 
 export class SoundDevice {
-  constructor(
-    private SendTXMessage: SendTxMessage,
-    private emitter: IEventEmitter,
-  ) {}
+  constructor(private config: DevicePluginConfig) {}
+
   /**
    * Play a frequency from the robot's buzzer.
    * @param frequence Frequency of note in units of Hz.
@@ -34,8 +26,8 @@ export class SoundDevice {
       SoundCommands.PlayNote,
       new Uint8Array(buffer),
     );
-    await this.SendTXMessage(message);
-    await GetRxResponse(this.emitter, message);
+    await this.config.sendMessage(message);
+    await this.config.waitForResponse(message);
   }
 
   /**
@@ -43,7 +35,7 @@ export class SoundDevice {
    */
   public async stopNote(): Promise<void> {
     const message = CreateMessage(Devices.Sound, SoundCommands.PlayNote);
-    await this.SendTXMessage(message);
+    await this.config.sendMessage(message);
   }
 
   /***
@@ -56,7 +48,7 @@ export class SoundDevice {
     const data = new Uint8Array(buffer);
     data.set(Array.from(phrase.substr(0, 16)).map(x => x.charCodeAt(0)));
     const message = CreateMessage(Devices.Sound, SoundCommands.SayPhrase, data);
-    await this.SendTXMessage(message);
-    await GetRxResponse(this.emitter, message);
+    await this.config.sendMessage(message);
+    await this.config.waitForResponse(message);
   }
 }

@@ -1,7 +1,10 @@
 import * as ble from 'react-native-ble-plx';
-import {ROOT_IDENTIFIER_SERVICE} from './constants';
+import {
+  ROOT_IDENTIFIER_SERVICE,
+  IEventEmitter,
+  BleDeviceInformation,
+} from './shared';
 import {EventEmitter} from 'eventemitter3';
-import {BleDeviceInformation, IEventEmitter} from './utilties';
 import manager from './bluetooth';
 
 export interface Status {

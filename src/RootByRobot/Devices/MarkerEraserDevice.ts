@@ -1,10 +1,5 @@
-import {Devices} from '../constants';
-import {
-  CreateMessage,
-  IEventEmitter,
-  GetRxResponse,
-  SendTxMessage,
-} from '../utilties';
+import {Devices, DevicePluginConfig} from '../shared';
+import {CreateMessage} from '../utilties';
 
 enum MarkerEraserCommands {
   SetMarkerEraserPosition = 0,
@@ -17,10 +12,7 @@ export enum MarkerEraserPosition {
 }
 
 export class MarkerEraserDevice {
-  constructor(
-    private SendTXMessage: SendTxMessage,
-    private emitter: IEventEmitter,
-  ) {}
+  constructor(private config: DevicePluginConfig) {}
 
   /**
    * Set the position of the marker/eraser actuator.
@@ -33,7 +25,7 @@ export class MarkerEraserDevice {
       MarkerEraserCommands.SetMarkerEraserPosition,
       [position],
     );
-    await this.SendTXMessage(message);
-    await GetRxResponse(this.emitter, message);
+    await this.config.sendMessage(message);
+    await this.config.waitForResponse(message);
   }
 }

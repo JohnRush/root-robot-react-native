@@ -1,13 +1,5 @@
-import {Devices} from '../constants';
-import {
-  CreateMessage,
-  StringToUtf8Special,
-  BufferAsString,
-  IEventEmitter,
-  GetRxResponse,
-  SendTxMessage,
-  Clamp,
-} from '../utilties';
+import {Devices, DevicePluginConfig} from '../shared';
+import {CreateMessage, Clamp} from '../utilties';
 
 export enum LEDAnimationMode {
   Off = 0,
@@ -21,10 +13,7 @@ enum LEDLightsCommmand {
 }
 
 export class LEDLightsDevice {
-  constructor(
-    private SendTXMessage: SendTxMessage,
-    private emitter: IEventEmitter,
-  ) {}
+  constructor(private config: DevicePluginConfig) {}
 
   /**
    * Set LED cross animation type and color.
@@ -44,6 +33,7 @@ export class LEDLightsDevice {
       LEDLightsCommmand.SetLEDAnimation,
       [mode, Clamp(red, 0, 255), Clamp(green, 0, 255), Clamp(blue, 0, 255)],
     );
-    await this.SendTXMessage(message);
+
+    await this.config.sendMessage(message);
   }
 }

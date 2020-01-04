@@ -1,39 +1,62 @@
 import {Device, Characteristic} from 'react-native-ble-plx';
 import {
-  ROOT_IDENTIFIER_SERVICE,
-  DEVICE_INFORMATION_SERVICE,
-  SERIAL_NUMBER_CHARACTERISTIC,
-  FIRMWARE_VERSION_CHARACTERISTIC,
-  HARDWARE_VERSION_CHARACTERISTIC,
-  MANUFACTURER_CHARACTERISTIC,
-  ROBOT_STATE_CHARACTERISTIC,
-  UART_SERVICE,
-  TX_CHARACTERISTIC,
-  RX_CHARACTERISTIC,
   Devices,
-} from './constants';
+  IEventEmitter,
+  BleDeviceInformation,
+  RobotInformation,
+  RxTxMessage,
+  RobotState,
+  DevicePluginConfig,
+} from './shared';
 import * as Base64 from './lib/base64';
 import {encodeBase64} from './lib/base64New';
 import {EventEmitter} from 'eventemitter3';
-import {
-  RobotInformation,
-  BleDeviceInformation,
-  RxTxMessage,
-  MessageAsHex,
-  Base64ToUtf8,
-  stripNulls,
-  RobotState,
-  IEventEmitter,
-  BufferAsHex,
-} from './utilties';
+import {MessageAsHex, Base64ToUtf8, stripNulls} from './utilties';
 import manager from './bluetooth';
 import {GeneralDevice} from './Devices/GeneralDevice';
 import {MotorsDevice} from './Devices/MotorsDevice';
 import {MarkerEraserDevice} from './Devices/MarkerEraserDevice';
 import {SoundDevice} from './Devices/SoundDevice';
 import {LEDLightsDevice} from './Devices/LEDLightsDevice';
-import {ColorSensorDevice, SensorColor} from './Devices/ColorSensorDevice';
+import {ColorSensorDevice} from './Devices/ColorSensorDevice';
 import {BumpersDevice} from './Devices/BumpersDevice';
+
+const DEVICE_INFORMATION_SERVICE = '0000180a-0000-1000-8000-00805f9b34fb';
+const SERIAL_NUMBER_CHARACTERISTIC = '00002a25-0000-1000-8000-00805f9b34fb';
+const FIRMWARE_VERSION_CHARACTERISTIC = '00002a26-0000-1000-8000-00805f9b34fb';
+const HARDWARE_VERSION_CHARACTERISTIC = '00002a27-0000-1000-8000-00805f9b34fb';
+const MANUFACTURER_CHARACTERISTIC = '00002a29-0000-1000-8000-00805f9b34fb';
+const ROBOT_STATE_CHARACTERISTIC = '00008bb6-0000-1000-8000-00805f9b34fb';
+
+const UART_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const TX_CHARACTERISTIC = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const RX_CHARACTERISTIC = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+async function WaitForRxResponse(
+  emitter: IEventEmitter,
+  message: RxTxMessage,
+): Promise<Uint8Array> {
+  const handleRx = (resolve: any, response: RxTxMessage) => {
+    if (
+      response &&
+      response.payload &&
+      response.device === message.device &&
+      response.command === message.command &&
+      response.id == message.id
+    ) {
+      resolve(response);
+    }
+  };
+
+  const work = new Promise<RxTxMessage>((resolve, reject) => {
+    emitter.on('rx', (x: RxTxMessage) => handleRx(resolve, x));
+  }).then(x => {
+    emitter.removeListener('rx', handleRx);
+    return x.payload!;
+  });
+
+  return work;
+}
 
 interface RobotDevices {
   general: GeneralDevice;
@@ -58,7 +81,7 @@ export class Robot {
   private requestedId: string;
 
   constructor(robotInfo: BleDeviceInformation) {
-    console.log('Robot constructor');
+    console.debug('Robot constructor');
 
     this.requestedId = robotInfo.id;
 
@@ -67,14 +90,21 @@ export class Robot {
     });
 
     this._devices = {
-      general: new GeneralDevice(this.sendTXMessage, this.emitter),
-      motors: new MotorsDevice(this.sendTXMessage, this.emitter),
-      markerEraser: new MarkerEraserDevice(this.sendTXMessage, this.emitter),
-      sound: new SoundDevice(this.sendTXMessage, this.emitter),
-      LEDLights: new LEDLightsDevice(this.sendTXMessage, this.emitter),
-      colorSensor: new ColorSensorDevice(this.sendTXMessage, this.emitter),
-      bumpers: new BumpersDevice(this.sendTXMessage, this.emitter),
+      general: new GeneralDevice(this.createPluginConfig('general')),
+      motors: new MotorsDevice(this.createPluginConfig('motors')),
+      markerEraser: new MarkerEraserDevice(this.createPluginConfig('marker')),
+      sound: new SoundDevice(this.createPluginConfig('sound')),
+      LEDLights: new LEDLightsDevice(this.createPluginConfig('led')),
+      colorSensor: new ColorSensorDevice(this.createPluginConfig('color')),
+      bumpers: new BumpersDevice(this.createPluginConfig('bumpers')),
     };
+  }
+
+  public dispose() {
+    console.debug('Robot dispose');
+    if (!this.disposed) {
+      this.disposed = true;
+    }
   }
 
   public get devices(): RobotDevices {
@@ -107,6 +137,30 @@ export class Robot {
     }
   }
 
+  private readonly filterRxEvents = (
+    deviceId: number,
+    callback: (message: RxTxMessage) => void,
+  ): void => {
+    const _filterMessages = (message: RxTxMessage) => {
+      if (deviceId === message.device) {
+        try {
+          callback(message);
+        } catch {}
+      }
+    };
+    this.emitter.on('rx', _filterMessages);
+  };
+
+  private createPluginConfig(eventPrefix: string): DevicePluginConfig {
+    return {
+      sendMessage: this.sendTXMessage,
+      waitForResponse: x => WaitForRxResponse(this.emitter, x),
+      emit: (name: string, ...args: any[]) =>
+        this.emitter.emit(`${eventPrefix}:${name}`, args),
+      subscribe: (id, fn) => this.filterRxEvents(id, fn),
+    };
+  }
+
   private setBluetoothInformation(info: BleDeviceInformation) {
     this._bluetoothInfo = {...info};
     this.emitter.emit('bluetooth', {...info});
@@ -115,13 +169,6 @@ export class Robot {
   private setRobotInformation(info: RobotInformation) {
     this._robotInfo = {...info};
     this.emitter.emit('robot-info', {...info});
-  }
-
-  public dispose() {
-    console.log('Robot dispose');
-    if (!this.disposed) {
-      this.disposed = true;
-    }
   }
 
   private startMonitoringRx() {

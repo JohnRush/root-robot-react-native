@@ -1,11 +1,5 @@
-import {Devices} from '../constants';
-import {
-  CreateMessage,
-  IEventEmitter,
-  SendTxMessage,
-  GetRxResponse,
-  Clamp,
-} from '../utilties';
+import {Devices, DevicePluginConfig} from '../shared';
+import {CreateMessage, Clamp} from '../utilties';
 
 enum MotorsCommand {
   LeftAndRightSpeed = 4,
@@ -16,10 +10,7 @@ enum MotorsCommand {
 }
 
 export class MotorsDevice {
-  constructor(
-    private SendTXMessage: SendTxMessage,
-    private emitter: IEventEmitter,
-  ) {}
+  constructor(private config: DevicePluginConfig) {}
 
   /**
    * Set the linear velocity for the robot.
@@ -40,7 +31,7 @@ export class MotorsDevice {
       MotorsCommand.LeftAndRightSpeed,
       new Uint8Array(buffer),
     );
-    await this.SendTXMessage(message);
+    await this.config.sendMessage(message);
   }
 
   /**
@@ -56,7 +47,7 @@ export class MotorsDevice {
       MotorsCommand.LeftMotorSpeed,
       new Uint8Array(buffer),
     );
-    await this.SendTXMessage(message);
+    await this.config.sendMessage(message);
   }
 
   /**
@@ -72,7 +63,7 @@ export class MotorsDevice {
       MotorsCommand.RightMotorSpeed,
       new Uint8Array(buffer),
     );
-    await this.SendTXMessage(message);
+    await this.config.sendMessage(message);
   }
 
   /**
@@ -90,8 +81,8 @@ export class MotorsDevice {
       MotorsCommand.DriveDistance,
       new Uint8Array(buffer),
     );
-    await this.SendTXMessage(message);
-    await GetRxResponse(this.emitter, message);
+    await this.config.sendMessage(message);
+    await this.config.waitForResponse(message);
   }
 
   /**
@@ -109,7 +100,7 @@ export class MotorsDevice {
       MotorsCommand.RotateAngle,
       new Uint8Array(buffer),
     );
-    await this.SendTXMessage(message);
-    await GetRxResponse(this.emitter, message);
+    await this.config.sendMessage(message);
+    await this.config.waitForResponse(message);
   }
 }
