@@ -25,7 +25,7 @@ export class RobotFinder {
    * 'status' => @see Status
    * 'robots' => @see UnconnectedRobot[]
    */
-  public emitter = <IEventEmitter>(<any>new EventEmitter());
+  public emitter: IEventEmitter = new EventEmitter();
 
   constructor() {
     console.debug('RobotFinder Constructor');

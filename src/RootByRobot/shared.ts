@@ -1,4 +1,5 @@
 import {Characteristic} from 'react-native-ble-plx';
+import {ListenerFn} from 'eventemitter3';
 
 export const ROOT_IDENTIFIER_SERVICE = '48c5d828-ac2a-442d-97a3-0c9822b04979';
 
@@ -19,10 +20,18 @@ export enum Devices {
 export type EventEmitFn = (name: string, ...args: any[]) => void;
 
 export interface IEventEmitter {
-  on: (name: string, fn: Function) => void;
-  once: (name: string, fn: Function) => void;
+  on: (
+    name: string,
+    fn: (...args: any[]) => void,
+    contex?: any,
+  ) => IEventEmitter;
+  once: (
+    name: string,
+    fn: (...args: any[]) => void,
+    contex?: any,
+  ) => IEventEmitter;
   emit: (name: string, ...args: any[]) => void;
-  removeListener: (name: string, fn: Function) => void;
+  removeListener: (name: string, fn: (...args: any[]) => void) => void;
 }
 
 export interface Events {
