@@ -2,11 +2,11 @@ import {Devices, RxTxMessage, DevicePluginConfig} from '../shared';
 import {ArrayBufferFromBytes} from '../utilties';
 
 enum DeviceEvent {
-  // The robot sends a Bumper Event whenever one of the bumpers is pressed or released.
-  BumperEvent = 0,
+  /** The robot sends a Bumper Event whenever one of the bumpers is pressed or released. */
+  BumpersChangedEvent = 0,
 }
 
-export interface BumpersEvent {
+export interface BumpersState {
   timestamp: number;
   isLeftBumperPressed: boolean;
   isRightBumperPressed: boolean;
@@ -18,7 +18,7 @@ export class BumpersDevice {
   }
 
   public readonly listenForMyEvents = (message: RxTxMessage) => {
-    if (message.command === DeviceEvent.BumperEvent) {
+    if (message.command === DeviceEvent.BumpersChangedEvent) {
       this.handleBumperEvent(message);
     }
   };
@@ -29,12 +29,13 @@ export class BumpersDevice {
     const view = new DataView(buffer);
     const timestamp = view.getUint32(0);
     const bumperState = view.getUint8(4);
-    const payload: BumpersEvent = {
+    const payload: BumpersState = {
       timestamp,
       isLeftBumperPressed: (bumperState & 0x80) != 0,
       isRightBumperPressed: (bumperState & 0x40) != 0,
     };
-    console.debug('BumpersDevice', payload);
-    this.config.emit('event', payload);
+
+    // console.debug('Bumpers Changed Event', payload);
+    this.config.emit('bumpersChanged', payload);
   };
 }

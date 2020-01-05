@@ -44,7 +44,7 @@ export class LightSensorsDevice {
       rightAmbient: view.getUint16(7),
     };
 
-    console.debug('LightSensorDevice Light Event', event);
+    // console.debug('LightSensorDevice Light Event', event);
     this.config.emit('light', event);
   };
 }

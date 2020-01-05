@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {Robot, LightingOption, BumpersEvent} from '../RootByRobot';
+import {Robot, LightingOption, BumpersState} from '../RootByRobot';
 import * as Sequencer from '../Extras/sequencer';
 
 export interface ActiveRobotProps {
@@ -21,7 +21,7 @@ export interface ActiveRobotProps {
 
 const ActiveRobot = (props: ActiveRobotProps) => {
   const {robot} = props;
-  const [bumpers, setBumpers] = useState<BumpersEvent>();
+  const [bumpers, setBumpers] = useState<BumpersState>();
 
   useEffect(() => {
     robot.emitter.on('bumpers:Event', setBumpers);

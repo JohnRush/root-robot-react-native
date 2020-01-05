@@ -8,7 +8,7 @@ export {MarkerEraserPosition} from './Devices/MarkerEraserDevice';
 export {BoardVersion} from './Devices/GeneralDevice';
 export type VersionInfo = import('./Devices/GeneralDevice').BoardVersion;
 
-export type BumpersEvent = import('./Devices/BumpersDevice').BumpersEvent;
+export type BumpersState = import('./Devices/BumpersDevice').BumpersState;
 
 export {LightEventState} from './Devices/LightSensorsDevice';
 export type LightEvent = import('./Devices/LightSensorsDevice').LightEvent;
@@ -20,3 +20,7 @@ export {SensorColor, LightingOption} from './Devices/ColorSensorDevice';
 export type NewColorEvent = import('./Devices/ColorSensorDevice').NewColorEvent;
 
 export type BatteryLevel = import('./Devices/BatteryDevice').BatteryLevel;
+
+export type TouchSensorsState = import('./Devices/TouchSensorsDevice').TouchSensorsState;
+
+export type CliffSensorState = import('./Devices/CliffSensorDevice').CliffSensorState;
