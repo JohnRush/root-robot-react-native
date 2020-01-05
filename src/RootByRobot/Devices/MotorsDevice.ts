@@ -1,5 +1,5 @@
-import {Devices, DevicePluginConfig} from '../shared';
-import {CreateMessage, Clamp} from '../utilties';
+import {Devices, DevicePluginConfig, RxTxMessage} from '../shared';
+import {CreateMessage, Clamp, ArrayBufferFromBytes} from '../utilties';
 
 enum MotorsCommand {
   LeftAndRightSpeed = 4,
@@ -9,8 +9,54 @@ enum MotorsCommand {
   RotateAngle = 12,
 }
 
+enum MotorsEvent {
+  MotorStallEvent = 29,
+}
+
+export enum StallMotor {
+  Left = 0,
+  Right = 1,
+  MarkerEraser = 2,
+}
+
+export enum StallCause {
+  NoStall = 0,
+  Overcurrent = 1,
+  Undercurrent = 2,
+  Underspeed = 3,
+  SturatedPID = 4,
+  Timeout = 5,
+}
+
+export interface MotorStallEvent {
+  timestamp: number;
+  whichMotor: StallMotor;
+  cause: StallCause;
+}
+
 export class MotorsDevice {
-  constructor(private config: DevicePluginConfig) {}
+  constructor(private config: DevicePluginConfig) {
+    this.config.subscribe(Devices.Motors, this.listenForMyEvents);
+  }
+
+  private readonly listenForMyEvents = (message: RxTxMessage) => {
+    if (message.command === MotorsEvent.MotorStallEvent) {
+      this.handleMotorStallEvent(message);
+    }
+  };
+
+  private readonly handleMotorStallEvent = (message: RxTxMessage) => {
+    const buffer = ArrayBufferFromBytes(message.payload!);
+    const view = new DataView(buffer);
+    const event: MotorStallEvent = {
+      timestamp: view.getUint32(0),
+      whichMotor: view.getUint8(4) as StallMotor,
+      cause: view.getUint8(5) as StallCause,
+    };
+
+    //console.debug('MotorsDevice Stall Event', event);
+    this.config.emit('stall', event);
+  };
 
   /**
    * Set the linear velocity for the robot.

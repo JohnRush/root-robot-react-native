@@ -24,15 +24,14 @@ export enum LightingOption {
 
 export enum SensorColor {
   White = 0,
-  KBlack = 1,
+  Black = 1,
   Red = 2,
   Green = 3,
   Blue = 4,
 }
 
-/**
- * Events: 'colorSensor:NewColorEvent'
- */
+export type NewColorEvent = number[];
+
 export class ColorSensorDevice {
   constructor(private config: DevicePluginConfig) {
     this.config.subscribe(Devices.ColorSensor, this.listenForMyEvents);
@@ -45,7 +44,7 @@ export class ColorSensorDevice {
   };
 
   private readonly handleColorSensorEvent = (message: RxTxMessage) => {
-    const colors = [] as Array<number>;
+    const colors: NewColorEvent = [] as Array<number>;
     message.payload!.forEach(b => {
       colors.push((b & 0xf) >> 4);
       colors.push(b & 0x0f);

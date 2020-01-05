@@ -3,6 +3,7 @@ import {
   DevicePluginConfig,
   EventWatcher,
   SendTxMessage,
+  RxTxMessage,
 } from '../shared';
 import {CreateMessage, StringToUtf8Special, BufferAsString} from '../utilties';
 
@@ -18,6 +19,10 @@ enum GeneralCommand {
   GetSerialNumber = 14,
 }
 
+enum GeneralEvents {
+  StopProject = 4,
+}
+
 export enum BoardVersion {
   MainBoard = 0,
   ColorBoard = 1,
@@ -31,13 +36,19 @@ export interface VersionInfo {
 }
 
 export class GeneralDevice {
-  private _sender: SendTxMessage;
-  private _watcher: EventWatcher;
-
-  constructor(pluginConfig: DevicePluginConfig) {
-    this._sender = pluginConfig.sendMessage;
-    this._watcher = pluginConfig.waitForResponse;
+  constructor(private config: DevicePluginConfig) {
+    this.config.subscribe(Devices.General, this.listenForMyEvents);
   }
+
+  private readonly listenForMyEvents = (message: RxTxMessage) => {
+    if (message.command === GeneralEvents.StopProject) {
+      this.handleStopProjectEvent(message);
+    }
+  };
+
+  private readonly handleStopProjectEvent = (message: RxTxMessage) => {
+    this.config.emit('stop');
+  };
 
   /**
    * Get the software and hardware version numbers for the requested board.
@@ -49,9 +60,9 @@ export class GeneralDevice {
       GeneralCommand.GetVersions,
       board === BoardVersion.MainBoard ? [0xa5] : [0xc6],
     );
-    await this._sender(message);
 
-    const response = await this._watcher(message);
+    await this.config.sendMessage(message);
+    const response = await this.config.waitForResponse(message);
 
     return {
       Firmware: `${response[1]}.${response[2]}`,
@@ -66,8 +77,8 @@ export class GeneralDevice {
    */
   public async getName(): Promise<string | null> {
     const message = CreateMessage(Devices.General, GeneralCommand.GetName);
-    await this._sender(message);
-    const response = await this._watcher(message);
+    await this.config.sendMessage(message);
+    const response = await this.config.waitForResponse(message);
     return BufferAsString(response);
   }
 
@@ -76,7 +87,7 @@ export class GeneralDevice {
    * @param name The namem to set. Only uses the first 16 characters.
    */
   public async setName(name: string) {
-    await this._sender(
+    await this.config.sendMessage(
       CreateMessage(
         Devices.General,
         GeneralCommand.SetName,
@@ -89,7 +100,7 @@ export class GeneralDevice {
    * Immediately stop the robot and cancel any pending actions. (Same as pressing the stop button in the Root Coding app.)
    */
   public async stopAndReset() {
-    await this._sender(
+    await this.config.sendMessage(
       CreateMessage(Devices.General, GeneralCommand.StopAndReset),
     );
   }
@@ -98,7 +109,7 @@ export class GeneralDevice {
    * Instruct robot to immediately terminate BLE connection. This is sometimes faster than disconnecting from BLE host's side.
    */
   public async disconnect() {
-    await this._sender(
+    await this.config.sendMessage(
       CreateMessage(Devices.General, GeneralCommand.Disconnect),
     );
   }
@@ -129,8 +140,8 @@ export class GeneralDevice {
       Devices.General,
       GeneralCommand.GetSerialNumber,
     );
-    await this._sender(message);
-    const response = await this._watcher(message);
+    await this.config.sendMessage(message);
+    const response = await this.config.waitForResponse(message);
     return BufferAsString(response);
   }
 }

@@ -20,6 +20,7 @@ import {SoundDevice} from './Devices/SoundDevice';
 import {LEDLightsDevice} from './Devices/LEDLightsDevice';
 import {ColorSensorDevice} from './Devices/ColorSensorDevice';
 import {BumpersDevice} from './Devices/BumpersDevice';
+import {LightSensorsDevice} from './Devices/LightSensorsDevice';
 
 const DEVICE_INFORMATION_SERVICE = '0000180a-0000-1000-8000-00805f9b34fb';
 const SERIAL_NUMBER_CHARACTERISTIC = '00002a25-0000-1000-8000-00805f9b34fb';
@@ -61,6 +62,7 @@ async function WaitForRxResponse(
 interface RobotDevices {
   general: GeneralDevice;
   motors: MotorsDevice;
+  lightSensor: LightSensorsDevice;
   markerEraser: MarkerEraserDevice;
   sound: SoundDevice;
   LEDLights: LEDLightsDevice;
@@ -92,6 +94,7 @@ export class Robot {
     this._devices = {
       general: new GeneralDevice(this.createPluginConfig('general')),
       motors: new MotorsDevice(this.createPluginConfig('motors')),
+      lightSensor: new LightSensorsDevice(this.createPluginConfig('light')),
       markerEraser: new MarkerEraserDevice(this.createPluginConfig('marker')),
       sound: new SoundDevice(this.createPluginConfig('sound')),
       LEDLights: new LEDLightsDevice(this.createPluginConfig('led')),
