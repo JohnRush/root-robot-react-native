@@ -123,6 +123,9 @@ const ActiveRobot = (props: ActiveRobotProps) => {
               onRelease={() => robot.devices.motors.setRightMotorSpeed(0)}>
               Right Forward
             </PressableButton>
+            <Button onPress={() => robot.devices.battery.getBatterLevel()}>
+              Get Battery Level
+            </Button>
           </View>
         </ScrollView>
       </SafeAreaView>

@@ -18,3 +18,5 @@ export type MotorStallEvent = import('./Devices/MotorsDevice').MotorStallEvent;
 
 export {SensorColor, LightingOption} from './Devices/ColorSensorDevice';
 export type NewColorEvent = import('./Devices/ColorSensorDevice').NewColorEvent;
+
+export type BatteryLevel = import('./Devices/BatteryDevice').BatteryLevel;

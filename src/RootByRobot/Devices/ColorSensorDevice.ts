@@ -50,7 +50,7 @@ export class ColorSensorDevice {
       colors.push(b & 0x0f);
     });
 
-    console.debug('ColorSensorDevice', colors);
+    //console.debug('Color Sensor Event', colors);
     this.config.emit('newColorEvent', colors);
   };
 

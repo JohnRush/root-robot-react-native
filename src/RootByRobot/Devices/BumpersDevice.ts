@@ -12,9 +12,6 @@ export interface BumpersEvent {
   isRightBumperPressed: boolean;
 }
 
-/**
- * Events: 'bumpers:event'
- */
 export class BumpersDevice {
   constructor(private config: DevicePluginConfig) {
     this.config.subscribe(Devices.Bumpers, this.listenForMyEvents);

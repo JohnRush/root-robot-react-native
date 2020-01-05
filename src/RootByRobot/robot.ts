@@ -21,6 +21,7 @@ import {LEDLightsDevice} from './Devices/LEDLightsDevice';
 import {ColorSensorDevice} from './Devices/ColorSensorDevice';
 import {BumpersDevice} from './Devices/BumpersDevice';
 import {LightSensorsDevice} from './Devices/LightSensorsDevice';
+import {BatteryDevice} from './Devices/BatteryDevice';
 
 const DEVICE_INFORMATION_SERVICE = '0000180a-0000-1000-8000-00805f9b34fb';
 const SERIAL_NUMBER_CHARACTERISTIC = '00002a25-0000-1000-8000-00805f9b34fb';
@@ -68,6 +69,7 @@ interface RobotDevices {
   LEDLights: LEDLightsDevice;
   colorSensor: ColorSensorDevice;
   bumpers: BumpersDevice;
+  battery: BatteryDevice;
 }
 
 export class Robot {
@@ -100,6 +102,7 @@ export class Robot {
       LEDLights: new LEDLightsDevice(this.createPluginConfig('led')),
       colorSensor: new ColorSensorDevice(this.createPluginConfig('color')),
       bumpers: new BumpersDevice(this.createPluginConfig('bumpers')),
+      battery: new BatteryDevice(this.createPluginConfig('battery')),
     };
   }
 
