@@ -191,7 +191,7 @@ export class Robot {
     this.assertDevice().monitorCharacteristicForService(
       UART_SERVICE,
       RX_CHARACTERISTIC,
-      (error: Error, characteristic: Characteristic) => {
+      (error: Error | null, characteristic: Characteristic | null) => {
         if (error) {
           console.log(`RX: Error - ${error.message ? error.message : error}}`);
         } else if (characteristic && characteristic.value) {
