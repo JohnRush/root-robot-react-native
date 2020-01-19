@@ -76,6 +76,21 @@ interface RobotDevices {
   cliffSensor: CliffSensorDevice;
 }
 
+/**
+ * Events from the robot:
+ * general:stop
+ * motors:stall
+ * light:light
+ * color:newColorEvent
+ * bumpers:bumpersChanged
+ * battery:batteryLevel
+ * touch:touchChanged
+ * cliff:cliffChanged
+ */
+
+/**
+ * This is the primary robot instances mapped to a physical Root Robot device.
+ */
 export class Robot {
   public emitter = <IEventEmitter>(<any>new EventEmitter());
 
