@@ -1,7 +1,8 @@
 {
-  "name": "irobot-react-native",
+  "name": "root-robot-react-native",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
+  "license": "MIT",
   "scripts": {
     "android": "react-native run-android",
     "start": "react-native start",
