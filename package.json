@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
@@ -13,7 +12,6 @@
     "eventemitter3": "^4.0.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
-    "react-native-ble": "^1.0.8",
     "react-native-ble-plx": "^1.1.0",
     "strict-event-emitter-types": "^2.0.0"
   },

@@ -42,7 +42,7 @@ export class BatteryDevice {
     return rval;
   };
 
-  public readonly getBatterLevel = async () => {
+  public readonly getBatteryLevel = async () => {
     const message = CreateMessage(
       Devices.Battery,
       BatteryCommand.GetBatteryLevel,

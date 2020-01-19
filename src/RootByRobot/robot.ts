@@ -167,8 +167,11 @@ export class Robot {
     return {
       sendMessage: this.sendTXMessage,
       waitForResponse: x => WaitForRxResponse(this.emitter, x),
-      emit: (name: string, ...args: any[]) =>
-        this.emitter.emit(`${eventPrefix}:${name}`, args),
+      emit: (name: string, eventPayload: any) => {
+        const eventName = `${eventPrefix}:${name}`;
+        //console.log(eventName, eventPayload);
+        this.emitter.emit(eventName, eventPayload);
+      },
       subscribe: (id, fn) => this.filterRxEvents(id, fn),
     };
   }
@@ -188,7 +191,7 @@ export class Robot {
     this.assertDevice().monitorCharacteristicForService(
       UART_SERVICE,
       RX_CHARACTERISTIC,
-      (error, characteristic) => {
+      (error: Error, characteristic: Characteristic) => {
         if (error) {
           console.log(`RX: Error - ${error.message ? error.message : error}}`);
         } else if (characteristic && characteristic.value) {

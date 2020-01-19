@@ -86,7 +86,7 @@ const RobotPickerView = ({onConnect}: FindAllRobotsViewProps) => {
           onPress={() => {
             connectToRobot(selectedRobot);
           }}
-          title={`Connect to ${selectedRobot.name}`}
+          title={`Connect to ${selectedRobot.name || 'Unnamed Robot'}`}
         />
       </>
     );

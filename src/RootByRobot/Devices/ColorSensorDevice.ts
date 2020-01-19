@@ -72,7 +72,7 @@ export class ColorSensorDevice {
     );
     await this.config.sendMessage(message);
     const response = await this.config.waitForResponse(message);
-    console.log(BufferAsHex(response));
+    //console.log(BufferAsHex(response));
     return Array.from(response);
   }
 }
