@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import RobotInstantiator2 from './Screens/RobotPickerView';
 import RobotInstantiator from './Screens/FindFirstRobotView';
 import ActiveRobot from './Screens/ActiveRobot';
-import {Robot} from './RootByRobot';
+import {Robot} from './RootRobot';
 
 declare var global: {HermesInternal: null | {}};
 

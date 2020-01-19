@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import {Robot} from '../RootByRobot';
+import {Robot} from '../RootRobot';
 import {FindFirstRobot} from '../Extras/FindFirstRobot';
 
 interface Props {

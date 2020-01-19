@@ -15,8 +15,8 @@ import {
   BumpersState,
   CliffSensorState,
   TouchSensorsState,
-} from '../RootByRobot';
-import * as Sequencer from '../Extras/sequencer';
+} from '../RootRobot';
+import * as Sequencer from '../Extras/Sequencer';
 
 export interface ActiveRobotProps {
   robot: Robot;

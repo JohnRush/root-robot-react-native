@@ -1,4 +1,4 @@
-import {Robot} from '../RootByRobot';
+import {Robot} from '../RootRobot';
 
 export interface RobotNotes {
   frequency: number;

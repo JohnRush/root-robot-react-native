@@ -8,8 +8,8 @@ import {
   RobotState,
   DevicePluginConfig,
 } from './shared';
-import * as Base64 from './lib/base64';
-import {encodeBase64} from './lib/base64New';
+import * as Base64 from './lib/DecodeBase64';
+import {encodeBase64} from './lib/EncodeBase64';
 import {EventEmitter} from 'eventemitter3';
 import {MessageAsHex, Base64ToUtf8, stripNulls} from './utilties';
 import manager from './bluetooth';
@@ -374,11 +374,11 @@ export class Robot {
     if (!message.message) return null;
 
     const encodedPayload = encodeBase64(message.message);
-    if (true) {
+    if (false) {
       if (message.debug) {
         console.log(`TX: ${message.debug}`);
       } else {
-        console.log(`TX: ${MessageAsHex(message.message)}`);
+        console.log(`TX: ${MessageAsHex(message.message!)}`);
       }
     }
 

@@ -17,7 +17,7 @@ const base64abc = (() => {
   return abc;
 })();
 
-function encodeBase64(bytes) {
+function encodeBase64(bytes: ArrayLike<number>) {
   let result = '',
     i,
     l = bytes.length;

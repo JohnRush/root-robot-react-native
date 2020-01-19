@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import * as robotFinder from '../RootByRobot/RobotFinder';
-import {BleDeviceInformation, Robot} from '../RootByRobot';
+import * as robotFinder from '../RootRobot/RobotFinder';
+import {BleDeviceInformation, Robot} from '../RootRobot';
 
 const currentStatusText = (status?: robotFinder.Status): string => {
   if (!status) {

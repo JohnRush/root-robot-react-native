@@ -1,5 +1,5 @@
 import {Device} from 'react-native-ble-plx';
-import {RobotFinder, BleDeviceInformation, Robot} from '../RootByRobot';
+import {RobotFinder, BleDeviceInformation, Robot} from '../RootRobot';
 
 export interface Status {
   status: string;

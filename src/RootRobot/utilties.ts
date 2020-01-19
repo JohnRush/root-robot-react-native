@@ -1,5 +1,5 @@
-import * as Base64 from './lib/base64';
-import {CRC8} from './lib/crc8';
+import * as Base64 from './lib/DecodeBase64';
+import {CRC8} from './lib/CRC8';
 import {RxTxMessage, IEventEmitter} from './shared';
 
 export function Clamp(value: number, min: number, max: number): number {
